@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Autenticação de Dois Fatores</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #EBE8E3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background-color: #FFFFFF; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
+        h2 { color: #C0392B; margin-bottom: 10px; }
+        p { color: #555; font-size: 14px; margin-bottom: 20px; }
+        
+        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 1px solid #ccc; }
+        .tab-btn { background: none; border: none; padding: 10px; cursor: pointer; font-weight: bold; color: #777; font-size: 14px; }
+        .tab-btn.active { color: #C0392B; border-bottom: 2px solid #C0392B; }
+        .tab-content { display: none; padding: 10px 0; }
+        .tab-content.active { display: block; }
+        
+        .chave-box { background-color: #F8F9FA; padding: 10px; border: 1px dashed #ccc; font-family: monospace; font-size: 16px; letter-spacing: 2px; margin: 10px 0; color: #333; }
+        
+        .input-group { text-align: left; margin-top: 20px; margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; text-align: center; font-size: 18px; letter-spacing: 4px; }
+        
+        .btn-enviar { background-color: #C0392B; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .btn-enviar:hover { background-color: #A93226; }
+        .alerta-error { background-color: #F2DEDE; color: #A94442; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; font-weight: bold;}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Segurança da Conta</h2>
+        <p>Configure ou acesse o seu aplicativo autenticador (Google Authenticator ou Authy).</p>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta-error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="tabs">
+            <button type="button" class="tab-btn active" onclick="mudarAba('qrcode')">Escanear QR Code</button>
+            <button type="button" class="tab-btn" onclick="mudarAba('manual')">Chave Manual</button>
+        </div>
+
+        <div id="qrcode" class="tab-content active">
+            <img src="{{ qr_code_url }}" alt="QR Code de Configuração" style="margin: 10px 0;">
+            <p style="font-size: 12px; color: #777;">Aponte a câmera do aplicativo para o QR Code acima.</p>
+        </div>
+
+        <div id="manual" class="tab-content">
+            <p style="text-align: left;">Caso não consiga escanear, adicione uma conta manualmente no app e digite este código completo:</p>
+            <div class="chave-box">{{ chave_manual }}</div>
+            <p style="font-size: 12px; color: #777;">Tipo de chave: Baseado em tempo (TOTP)</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="token">Código de Verificação (6 dígitos)</label>
+                <input type="text" id="token" name="token" maxlength="6" placeholder="000000" required autocomplete="off">
+            </div>
+            <button type="submit" class="btn-enviar">Verificar e Entrar</button>
+        </form>
+    </div>
+
+    <script>
+
+        function mudarAba(abaId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(abaId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Esqueci minha senha</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #EBE8E3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background-color: #FFFFFF; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
+        h2 { color: #C0392B; margin-bottom: 20px; font-size: 22px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .btn-enviar { background-color: #C0392B; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; display: block; text-decoration: none; box-sizing: border-box;}
+        .btn-enviar:hover { background-color: #A93226; }
+        
+        .btn-secundario { background-color: #777; margin-top: 10px; }
+        .btn-secundario:hover { background-color: #555; }
+        .btn-sucesso { background-color: #27AE60; margin-top: 15px; }
+        .btn-sucesso:hover { background-color: #219150; }
+        
+        .alerta { padding: 15px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 14px;}
+        .alerta-success { background-color: #DFF0D8; color: #3C763D; border: 1px solid #D6E9C6; }
+        
+        .link-voltar { display: block; margin-top: 25px; color: #555; text-decoration: none; font-size: 14px; }
+        .link-voltar:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Recuperar Senha</h2>
+        <p style="color: #555; font-size: 14px; margin-bottom: 20px;">Informe seu e-mail cadastrado para receber o código de 6 dígitos.</p>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta alerta-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required placeholder="Digite seu e-mail" autocomplete="email" oninput="formataEmail(this)">
+            </div>
+            
+            {% if messages %}
+                <button type="submit" class="btn-enviar btn-secundario">Reenviar Código</button>
+                <a href="{% url 'redefinir_senha' %}" class="btn-enviar btn-sucesso">Já tenho o código! Ir para troca</a>
+            {% else %}
+                <button type="submit" class="btn-enviar">Enviar Código</button>
+            {% endif %}
+            
+        </form>
+        <a href="{% url 'login' %}" class="link-voltar">Voltar para o Login</a>
+    </div>
+
+    <script>
+        function formataEmail(input) {
+            input.value = input.value.replace(/\s/g, '').toLowerCase();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Primeiro Acesso - Atualizar Senha</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #EBE8E3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background-color: #FFFFFF; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
+        h2 { color: #C0392B; margin-bottom: 10px; }
+        p { color: #555; font-size: 14px; margin-bottom: 20px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-enviar { background-color: #27AE60; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        .btn-enviar:hover { background-color: #219150; }
+        .alerta-error { background-color: #F2DEDE; color: #A94442; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; font-weight: bold;}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Primeiro Acesso</h2>
+        <p>Por medidas de segurança, você deve substituir a sua senha provisória por uma senha definitiva antes de acessar o painel.</p>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta-error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="nova_senha">Nova Senha Definitiva</label>
+                <input type="password" id="nova_senha" name="nova_senha" required>
+            </div>
+            <div class="input-group">
+                <label for="confirmar_senha">Confirme a Nova Senha</label>
+                <input type="password" id="confirmar_senha" name="confirmar_senha" required>
+            </div>
+            <button type="submit" class="btn-enviar">Cadastrar Senha e Entrar</button>
+        </form>
+    </div>
+</body>
+</html>

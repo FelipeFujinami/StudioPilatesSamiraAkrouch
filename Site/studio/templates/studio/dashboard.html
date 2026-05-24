@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel - Studio Pilates Samira Akrouch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #EBE8E3;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #C0392B;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .btn-sair {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid white;
+            padding: 5px 15px;
+            border-radius: 4px;
+        }
+        .btn-sair:hover {
+            background-color: white;
+            color: #C0392B;
+        }
+        .container {
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .btn-cadastrar {
+            background-color: #27AE60;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn-cadastrar:hover {
+            background-color: #219150;
+        }
+        
+        /* Estilos base para os avisos */
+        .alerta {
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border-radius: 4px; 
+            font-weight: bold;
+        }
+        .alerta-success {
+            background-color: #DFF0D8; 
+            color: #3C763D; 
+            border: 1px solid #D6E9C6;
+        }
+        .alerta-error {
+            background-color: #F2DEDE; 
+            color: #A94442; 
+            border: 1px solid #EBCCD1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Studio Pilates Samira Akrouch</h2>
+        <a href="{% url 'logout' %}" class="btn-sair">Sair</a>
+    </div>
+
+    <div class="container">
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta alerta-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <h1>Bem-vindo(a), {{ request.user.first_name|default:request.user.username }}!</h1>
+        <p>Este é o seu painel de controle seguro.</p>
+
+        {% if request.user.role == 'ceo' or request.user.role == 'secretaria' or request.user.is_superuser %}
+            
+            <a href="{% url 'cadastro_aluno' %}" class="btn-cadastrar">+ Cadastrar Novo Aluno</a>
+
+            <h3 style="margin-top: 40px; color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px;">Alunos Matriculados</h3>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                <thead>
+                    <tr style="background-color: #555; color: white; text-align: left;">
+                        <th style="padding: 15px;">Nome Completo</th>
+                        <th style="padding: 15px;">E-mail</th>
+                        <th style="padding: 15px;">CPF</th>
+                        <th style="padding: 15px;">Plano / Frequência</th>
+                        <th style="padding: 15px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos %}
+                    <tr style="border-bottom: 1px solid #EEEEEE;">
+                        <td style="padding: 15px; font-weight: bold;">
+                            <a href="{% url 'ver_aluno' aluno.id %}" title="Ver Ficha Completa" style="color: #C0392B; text-decoration: none;">
+                                {{ aluno.first_name }} {{ aluno.last_name }}
+                            </a>
+                        </td>
+                        <td style="padding: 15px; color: #555;">{{ aluno.email }}</td>
+                        <td style="padding: 15px; color: #555;">{{ aluno.cpf_protegido }}</td>
+                        <td style="padding: 15px; color: #555; text-transform: capitalize;">
+                            {{ aluno.plano|default:"Sem plano" }} - {{ aluno.dias_por_semana|default:"-" }}
+                        </td>
+                        <td style="padding: 15px;">
+                            <a href="{% url 'editar_aluno' aluno.id %}" style="color: #27AE60; text-decoration: none; font-weight: bold; margin-right: 15px;">Editar</a>
+                            <a href="{% url 'excluir_aluno' aluno.id %}" style="color: #C0392B; text-decoration: none; font-weight: bold;" onclick="return confirm('Tem certeza que deseja excluir permanentemente este(a) aluno(a)?')">Excluir</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="padding: 30px; text-align: center; color: #888;">Nenhum aluno matriculado até o momento.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            
+            <div style="background-color: #FFFFFF; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 30px;">
+                <h2 style="color: #C0392B; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Meu Plano Ativo</h2>
+                
+                <div style="display: flex; gap: 40px; margin-top: 20px;">
+                    <div>
+                        <p style="color: #555; font-size: 14px; margin-bottom: 5px;">Tipo de Plano</p>
+                        <p style="font-size: 18px; font-weight: bold; color: #333; margin: 0; text-transform: capitalize;">{{ request.user.plano|default:"Não informado" }}</p>
+                    </div>
+                    <div>
+                        <p style="color: #555; font-size: 14px; margin-bottom: 5px;">Frequência Semanal</p>
+                        <p style="font-size: 18px; font-weight: bold; color: #333; margin: 0;">{{ request.user.dias_por_semana|default:"-" }}</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; background-color: #F8F9FA; padding: 15px; border-radius: 6px; border-left: 4px solid #27AE60;">
+                    <p style="margin: 0; font-size: 14px; color: #333;"><strong>Aviso de Segurança:</strong> Seus dados médicos e informações pessoais estão protegidos de acordo com a LGPD. Para solicitar alterações cadastrais, entre em contato com a secretaria.</p>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+
+</body>
+</html>

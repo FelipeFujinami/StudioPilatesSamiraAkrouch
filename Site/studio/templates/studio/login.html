@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Studio Pilates Samira Akrouch</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #EBE8E3; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .login-box { 
+            background-color: #FFFFFF; 
+            padding: 40px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 350px; 
+            text-align: center; 
+        }
+        h2 { 
+            color: #C0392B; 
+            margin-bottom: 20px; 
+            font-size: 22px;
+        }
+        .input-group { 
+            text-align: left; 
+            margin-bottom: 15px; 
+        }
+        .input-group label { 
+            display: block; 
+            margin-bottom: 5px; 
+            color: #333; 
+            font-weight: bold; 
+        }
+        .input-group input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+        .btn-entrar { 
+            background-color: #C0392B; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            width: 100%; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold; 
+            margin-top: 10px; 
+        }
+        .btn-entrar:hover { 
+            background-color: #A93226; 
+        }
+        .esqueci-senha { 
+            display: block; 
+            margin-top: 15px; 
+            color: #555; 
+            text-decoration: none; 
+            font-size: 14px; 
+        }
+        .esqueci-senha:hover { 
+            text-decoration: underline; 
+        }
+        
+        .alerta {
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border-radius: 4px; 
+            font-weight: bold;
+        }
+        .alerta-success {
+            background-color: #DFF0D8; 
+            color: #3C763D; 
+            border: 1px solid #D6E9C6;
+        }
+        .alerta-error {
+            background-color: #F2DEDE; 
+            color: #A94442; 
+            border: 1px solid #EBCCD1;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Studio Pilates Samira Akrouch</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta alerta-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="input-group" style="position: relative;">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" required style="padding-right: 40px; width: 100%; box-sizing: border-box;">
+                
+                <button type="button" id="toggleSenha" onclick="alternarVisibilidade()" style="position: absolute; right: 10px; top: 30px; background: none; border: none; cursor: pointer; font-size: 18px; padding: 0;">
+                    👁️
+                </button>
+            </div>
+            
+            <button type="submit" class="btn-entrar">Entrar</button>
+        </form>
+        <a href="{% url 'esqueci_senha' %}" class="esqueci-senha">Esqueci minha senha</a>
+    </div>
+
+    <script>
+    function alternarVisibilidade() {
+        const campoSenha = document.getElementById('senha');
+        const botaoOlhinho = document.getElementById('toggleSenha');
+        
+        if (campoSenha.type === 'password') {
+            campoSenha.type = 'text';
+            botaoOlhinho.textContent = '🔒';
+        } else {
+            campoSenha.type = 'password';
+            botaoOlhinho.textContent = '👁️';
+        }
+    }
+    </script>
+</body>
+</html>

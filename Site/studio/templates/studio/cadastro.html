@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Aluno - Studio Pilates Samira Akrouch</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #EBE8E3; margin: 0; padding: 40px; }
+        .wizard-container { background-color: #FFFFFF; padding: 35px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 750px; margin: 0 auto; }
+        
+        .progress-bar { display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #ccc; padding-bottom: 15px; }
+        .step-indicator { font-weight: bold; color: #777; font-size: 14px; }
+        .step-indicator.active { color: #C0392B; }
+        
+        .form-step { display: none; }
+        .form-step.active { display: block; }
+        
+        h2 { color: #333; margin-top: 0; margin-bottom: 20px; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { font-size: 16px; color: #C0392B; margin-top: 25px; margin-bottom: 15px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-col { flex: 1; }
+        
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; font-size: 13px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        
+        .health-question { background-color: #F8F9FA; padding: 15px; border-radius: 6px; border: 1px solid #EAEAEA; margin-bottom: 15px; }
+        .radio-group { display: flex; gap: 20px; margin-top: 5px; }
+        .radio-group label { display: inline; font-weight: normal; margin-left: 5px; cursor: pointer; }
+        .qual-container { display: none; margin-top: 10px; }
+        
+        .actions-bar { display: flex; justify-content: space-between; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
+        .btn { padding: 12px 25px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; text-decoration: none; border: none; }
+        .btn-next { background-color: #C0392B; color: white; }
+        .btn-next:hover { background-color: #A93226; }
+        .btn-prev { background-color: #777; color: white; }
+        .btn-prev:hover { background-color: #555; }
+        .btn-save { background-color: #27AE60; color: white; }
+        .btn-save:hover { background-color: #219150; }
+        .btn-cancel { background-color: transparent; color: #555; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+    <div class="wizard-container">
+        
+        <div class="progress-bar">
+            <span class="step-indicator active" id="ind-0">1. Dados Pessoais</span>
+            <span class="step-indicator" id="ind-1">2. Informações de Saúde</span>
+        </div>
+
+        <form method="POST" id="wizardForm">
+            {% csrf_token %}
+            
+            <div class="form-step active" id="step-0">
+                <h2>Dados Pessoais & Contrato</h2>
+                
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" name="nome_completo" required placeholder="Digite o nome completo">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>Data de Nascimento</label>
+                        <input type="text" name="data_nascimento" id="id_data_nascimento" placeholder="DD/MM/AAAA" maxlength="10" required oninput="mascaraData(this)">
+                    </div>
+                    <div class="form-col">
+                        <label>Sexo</label>
+                        <select name="sexo" required>
+                            <option value="">Selecione...</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Não-binário">Não-binário</option>
+                            <option value="Prefiro não responder">Prefiro não responder</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col"><label>CPF</label><input type="text" name="cpf" required placeholder="000.000.000-00"></div>
+                    <div class="form-col"><label>RG</label><input type="text" name="rg" required placeholder="00.000.000-0"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>Estado Civil</label>
+                        <select name="estado_civil" required>
+                            <option value="">Selecione...</option>
+                            <option value="Solteiro(a)">Solteiro(a)</option>
+                            <option value="Casado(a)">Casado(a)</option>
+                            <option value="Divorciado(a)">Divorciado(a)</option>
+                            <option value="Viúvo(a)">Viúvo(a)</option>
+                        </select>
+                    </div>
+                    <div class="form-col"><label>Profissão</label><input type="text" name="profissao" required></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col"><label>Telefone Celular</label><input type="text" name="telefone" required placeholder="(00) 00000-0000"></div>
+                    <div class="form-col"><label>E-mail</label><input type="email" name="email" required placeholder="aluno@email.com"></div>
+                </div>
+
+                <div id="secao_responsavel" style="display: none; background-color: #FFF2F2; padding: 15px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #FCAAAA;">
+                    <h3 style="margin-top: 0;">Dados do Responsável (Aluno Menor de Idade)</h3>
+                    <div class="form-row">
+                        <div class="form-col"><label>Nome do Responsável</label><input type="text" name="nome_responsavel" id="id_nome_responsavel"></div>
+                        <div class="form-col"><label>Telefone do Responsável</label><input type="text" name="telefone_responsavel" id="id_telefone_responsavel" placeholder="(00) 00000-0000"></div>
+                    </div>
+                </div>
+
+                <h3>Endereço residencial</h3>
+                <div class="form-group" style="max-width: 200px;">
+                    <label>CEP</label>
+                    <input type="text" name="cep" id="id_cep" maxlength="9" oninput="buscaCepAuto(this.value)">
+                </div>
+
+                <div class="form-group"><label>Endereço (Logradouro)</label><input type="text" name="logradouro" id="id_logradouro" required></div>
+                
+                <div class="form-row">
+                    <div class="form-col" style="max-width: 150px;"><label>Número</label><input type="text" name="numero" id="id_numero" required></div>
+                    <div class="form-col"><label>Complemento</label><input type="text" name="complemento"></div>
+                </div>
+
+                <div class="form-group"><label>Bairro</label><input type="text" name="bairro" id="id_bairro" required></div>
+                
+                <div class="form-row">
+                    <div class="form-col" style="max-width: 100px;"><label>UF</label><input type="text" name="uf" id="id_uf" required maxlength="2"></div>
+                    <div class="form-col"><label>Município</label><input type="text" name="cidade" id="id_cidade" required></div>
+                </div>
+
+                <h3>Configuração do Contrato</h3>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>Plano</label>
+                        <select name="plano" required>
+                            <option value="mensal">Mensal</option>
+                            <option value="trimestral">Trimestral</option>
+                            <option value="anual">Anual</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label>Frequência</label>
+                        <select name="dias_por_semana" required>
+                            <option value="1x">1x na semana</option>
+                            <option value="2x">2x na semana</option>
+                            <option value="3x">3x na semana</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-step" id="step-1">
+                <h2>Informações de Saúde (Anamnese)</h2>
+                <p style="color: #555; font-size: 14px; margin-bottom: 20px;">Assinale "Sim" para as condições aplicáveis e descreva-as detalhadamente.</p>
+                
+                <div class="health-question">
+                    <label style="font-size: 14px;">Possui alguma doença?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="possui_doenca" id="possui_doenca_sim" value="sim" onclick="toggleSaudeQual('possui_doenca', 'qual_doenca')"><label for="possui_doenca_sim">Sim</label></div>
+                        <div><input type="radio" name="possui_doenca" id="possui_doenca_nao" value="nao" checked onclick="toggleSaudeQual('possui_doenca', 'qual_doenca')"><label for="possui_doenca_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="qual_doenca_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="qual_doenca" id="qual_doenca">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Já realizou cirurgias?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="fez_cirurgia" id="fez_cirurgia_sim" value="sim" onclick="toggleSaudeQual('fez_cirurgia', 'qual_cirurgia')"><label for="fez_cirurgia_sim">Sim</label></div>
+                        <div><input type="radio" name="fez_cirurgia" id="fez_cirurgia_nao" value="nao" checked onclick="toggleSaudeQual('fez_cirurgia', 'qual_cirurgia')"><label for="fez_cirurgia_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="qual_cirurgia_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="qual_cirurgia" id="qual_cirurgia">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Faz tratamento médico atualmente?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="faz_tratamento" id="faz_tratamento_sim" value="sim" onclick="toggleSaudeQual('faz_tratamento', 'qual_tratamento')"><label for="faz_tratamento_sim">Sim</label></div>
+                        <div><input type="radio" name="faz_tratamento" id="faz_tratamento_nao" value="nao" checked onclick="toggleSaudeQual('faz_tratamento', 'qual_tratamento')"><label for="faz_tratamento_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="qual_tratamento_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="qual_tratamento" id="qual_tratamento">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Possui dores frequentes?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="dores_frequentes" id="dores_frequentes_sim" value="sim" onclick="toggleSaudeQual('dores_frequentes', 'quais_dores')"><label for="dores_frequentes_sim">Sim</label></div>
+                        <div><input type="radio" name="dores_frequentes" id="dores_frequentes_nao" value="nao" checked onclick="toggleSaudeQual('dores_frequentes', 'quais_dores')"><label for="dores_frequentes_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="quais_dores_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="quais_dores" id="quais_dores">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Problemas de coluna?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="problemas_coluna" id="problemas_coluna_sim" value="sim" onclick="toggleSaudeQual('problemas_coluna', 'quais_problemas_coluna')"><label for="problemas_coluna_sim">Sim</label></div>
+                        <div><input type="radio" name="problemas_coluna" id="problemas_coluna_nao" value="nao" checked onclick="toggleSaudeQual('problemas_coluna', 'quais_problemas_coluna')"><label for="problemas_coluna_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="quais_problemas_coluna_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="quais_problemas_coluna" id="quais_problemas_coluna">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Hérnia de disco?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="hernia_disco" id="hernia_disco_sim" value="sim" onclick="toggleSaudeQual('hernia_disco', 'descricao_hernia')"><label for="hernia_disco_sim">Sim</label></div>
+                        <div><input type="radio" name="hernia_disco" id="hernia_disco_nao" value="nao" checked onclick="toggleSaudeQual('hernia_disco', 'descricao_hernia')"><label for="hernia_disco_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="descricao_hernia_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="descricao_hernia" id="descricao_hernia">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Problemas cardíacos?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="problemas_cardiacos" id="problemas_cardiacos_sim" value="sim" onclick="toggleSaudeQual('problemas_cardiacos', 'descricao_problemas_cardiacos')"><label for="problemas_cardiacos_sim">Sim</label></div>
+                        <div><input type="radio" name="problemas_cardiacos" id="problemas_cardiacos_nao" value="nao" checked onclick="toggleSaudeQual('problemas_cardiacos', 'descricao_problemas_cardiacos')"><label for="problemas_cardiacos_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="descricao_problemas_cardiacos_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="descricao_problemas_cardiacos" id="descricao_problemas_cardiacos">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Hipertensão?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="hipertensao" id="hipertensao_sim" value="sim" onclick="toggleSaudeQual('hipertensao', 'qual_hipertensao')"><label for="hipertensao_sim">Sim</label></div>
+                        <div><input type="radio" name="hipertensao" id="hipertensao_nao" value="nao" checked onclick="toggleSaudeQual('hipertensao', 'qual_hipertensao')"><label for="hipertensao_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="qual_hipertensao_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="qual_hipertensao" id="qual_hipertensao">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Diabetes?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="diabetes" id="diabetes_sim" value="sim" onclick="toggleSaudeQual('diabetes', 'qual_diabete')"><label for="diabetes_sim">Sim</label></div>
+                        <div><input type="radio" name="diabetes" id="diabetes_nao" value="nao" checked onclick="toggleSaudeQual('diabetes', 'qual_diabete')"><label for="diabetes_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="qual_diabete_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="qual_diabete" id="qual_diabete">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Osteoporose?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="osteoporose" id="osteoporose_sim" value="sim" onclick="toggleSaudeQual('osteoporose', 'qual_osteoporose')"><label for="osteoporose_sim">Sim</label></div>
+                        <div><input type="radio" name="osteoporose" id="osteoporose_nao" value="nao" checked onclick="toggleSaudeQual('osteoporose', 'qual_osteoporose')"><label for="osteoporose_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="qual_osteoporose_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="qual_osteoporose" id="qual_osteoporose">
+                    </div>
+                </div>
+
+                <div class="health-question">
+                    <label style="font-size: 14px;">Labirintite?</label>
+                    <div class="radio-group">
+                        <div><input type="radio" name="labirintite" id="labirintite_sim" value="sim" onclick="toggleSaudeQual('labirintite', 'qual_labirintite')"><label for="labirintite_sim">Sim</label></div>
+                        <div><input type="radio" name="labirintite" id="labirintite_nao" value="nao" checked onclick="toggleSaudeQual('labirintite', 'qual_labirintite')"><label for="labirintite_nao">Não</label></div>
+                    </div>
+                    <div class="qual-container" id="qual_labirintite_box">
+                        <label>Qual? Descreva:</label>
+                        <input type="text" name="qual_labirintite" id="qual_labirintite">
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <a href="{% url 'dashboard' %}" class="btn btn-cancel" id="btnCancelar">Cancelar</a>
+                <button type="button" class="btn btn-prev" id="btnVoltar" onclick="mudarPasso(-1)" style="display: none;">Voltar</button>
+                <button type="button" class="btn btn-next" id="btnAvancar" onclick="mudarPasso(1)">Próximo</button>
+                <button type="submit" class="btn btn-save" id="btnCadastrar" style="display: none;">Concluir Cadastro</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        let passoAtual = 0;
+        const totalPassos = 2; 
+
+        function mudarPasso(direcao) {
+            if (direcao === 1 && !validarPassoAtual()) {
+                return false;
+            }
+
+            document.getElementById(`step-${passoAtual}`).classList.remove('active');
+            document.getElementById(`ind-${passoAtual}`).classList.remove('active');
+
+            passoAtual += direcao;
+
+            document.getElementById(`step-${passoAtual}`).classList.add('active');
+            document.getElementById(`ind-${passoAtual}`).classList.add('active');
+
+            if (passoAtual === 0) {
+                document.getElementById('btnVoltar').style.display = 'none';
+                document.getElementById('btnCancelar').style.display = 'block';
+                document.getElementById('btnAvancar').style.display = 'block';
+                document.getElementById('btnCadastrar').style.display = 'none';
+            } else if (passoAtual === 1) {
+                document.getElementById('btnVoltar').style.display = 'block';
+                document.getElementById('btnCancelar').style.display = 'none';
+                document.getElementById('btnAvancar').style.display = 'none';
+                document.getElementById('btnCadastrar').style.display = 'block';
+            }
+            
+            window.scrollTo(0, 0);
+        }
+
+        function validarPassoAtual() {
+            const inputs = document.getElementById(`step-${passoAtual}`).querySelectorAll('input[required], select[required]');
+            for (let input of inputs) {
+                if (!input.checkValidity()) {
+                    input.reportValidity();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function mascaraData(input) {
+            let v = input.value.replace(/\D/g, "");
+            let f = "";
+            if (v.length > 0) {
+                f += v.substring(0, 2);
+                if (v.length > 2) {
+                    f += "/" + v.substring(2, 4);
+                    if (v.length > 4) {
+                        f += "/" + v.substring(4, 8);
+                    }
+                }
+            }
+            input.value = f;
+
+            if (v.length === 8) {
+                verificarMenorIdade(f);
+            }
+        }
+
+        function verificarMenorIdade(dataStr) {
+            let partes = dataStr.split('/');
+            if (partes.length === 3) {
+                let dia = parseInt(partes[0]);
+                let mes = parseInt(partes[1]) - 1;
+                let ano = parseInt(partes[2]);
+                
+                let dataNasc = new Date(ano, mes, dia);
+                let hoje = new Date();
+                let idade = hoje.getFullYear() - dataNasc.getFullYear();
+                let m = jokes.getMonth() - dataNasc.getMonth();
+                
+                if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) {
+                    idade--;
+                }
+
+                const secaoResp = document.getElementById('secao_responsavel');
+                const nomeResp = document.getElementById('id_nome_responsavel');
+                const telResp = document.getElementById('id_telefone_responsavel');
+
+                if (idade < 18 && idade > 0) {
+                    secaoResp.style.display = 'block';
+                    nomeResp.required = true;
+                    telResp.required = true;
+                } else {
+                    secaoResp.style.display = 'none';
+                    nomeResp.required = false;
+                    telResp.required = false;
+                }
+            }
+        }
+
+        function toggleSaudeQual(radioName, inputName) {
+            const radioSim = document.getElementById(`${radioName}_sim`);
+            const boxQual = document.getElementById(`${inputName}_box`);
+            const inputQual = document.getElementById(inputName);
+
+            if (radioSim.checked) {
+                boxQual.style.display = 'block';
+                inputQual.required = true;
+            } else {
+                boxQual.style.display = 'none';
+                inputQual.required = false;
+                inputQual.value = '';
+            }
+        }
+
+        function buscaCepAuto(valor) {
+            let cep = valor.replace(/\D/g, '');
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            document.getElementById('id_logradouro').value = data.logradouro;
+                            document.getElementById('id_bairro').value = data.bairro;
+                            document.getElementById('id_cidade').value = data.localidade;
+                            document.getElementById('id_uf').value = data.uf;
+                            document.getElementById('id_numero').focus();
+                        } else {
+                            alert("CEP não encontrado.");
+                        }
+                    })
+                    .catch(error => console.error('Erro na requisição ViaCEP:', error));
+            }
+        }
+    </script>
+</body>
+</html>

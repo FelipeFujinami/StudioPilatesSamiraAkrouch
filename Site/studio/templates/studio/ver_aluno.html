@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha do Aluno - Studio Pilates</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #EBE8E3; margin: 0; padding: 40px; }
+        .profile-container { background-color: #FFFFFF; padding: 35px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        .header-profile { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #C0392B; padding-bottom: 15px; margin-bottom: 25px; }
+        h2 { color: #333; margin: 0; }
+        .btn-action { padding: 10px 20px; border-radius: 4px; font-weight: bold; text-decoration: none; font-size: 14px; display: inline-block; }
+        .btn-edit { background-color: #27AE60; color: white; }
+        .btn-back { background-color: transparent; color: #555; border: 1px solid #ccc; margin-right: 10px; }
+        
+        .section-box { background-color: #F8F9FA; padding: 20px; border-radius: 6px; border: 1px solid #EAEAEA; margin-bottom: 25px; }
+        h3 { margin-top: 0; color: #C0392B; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        
+        .grid-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .info-group { font-size: 14px; color: #333; }
+        .info-group strong { color: #555; }
+        
+        .badge-saude { display: inline-block; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        .badge-sim { background-color: #FADBD8; color: #78281F; }
+        .badge-nao { background-color: #D4EFDF; color: #145A32; }
+        .descricao-medica { background-color: #FFF2F2; padding: 8px; border-left: 3px solid #C0392B; margin-top: 5px; font-size: 13px; border-radius: 0 4px 4px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="profile-container">
+        <div class="header-profile">
+            <h2>Ficha Cadastral: {{ aluno.first_name }} {{ aluno.last_name }}</h2>
+            <div>
+                <a href="{% url 'dashboard' %}" class="btn-action btn-back">Voltar</a>
+                <a href="{% url 'editar_aluno' aluno.id %}" class="btn-action btn-edit">Editar Ficha</a>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Dados Pessoais & Contrato</h3>
+            <div class="grid-info">
+                <div class="info-group"><strong>Data de Nascimento:</strong> {{ aluno.data_nascimento|date:"d/m/Y" }}</div>
+                <div class="info-group"><strong>Sexo:</strong> {{ aluno.sexo }}</div>
+                <div class="info-group"><strong>CPF:</strong> {{ aluno.cpf }}</div>
+                <div class="info-group"><strong>RG:</strong> {{ aluno.rg }}</div>
+                <div class="info-group"><strong>Estado Civil:</strong> {{ aluno.estado_civil }}</div>
+                <div class="info-group"><strong>Profissão:</strong> {{ aluno.profissao }}</div>
+                <div class="info-group"><strong>Telefone:</strong> {{ aluno.telefone }}</div>
+                <div class="info-group"><strong>E-mail:</strong> {{ aluno.email }}</div>
+                <div class="info-group"><strong>Plano Contratado:</strong> <span style="text-transform: capitalize;">{{ aluno.plano }}</span></div>
+                <div class="info-group"><strong>Frequência Semanal:</strong> {{ aluno.dias_por_semana }}</div>
+            </div>
+            
+            {% if aluno.nome_responsavel %}
+            <h4 style="color:#C0392B; margin-bottom: 5px; margin-top: 15px;">Dados do Responsável Legal</h4>
+            <div class="grid-info">
+                <div class="info-group"><strong>Nome:</strong> {{ aluno.nome_responsavel }}</div>
+                <div class="info-group"><strong>Telefone:</strong> {{ aluno.telefone_responsavel }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="section-box">
+            <h3>Endereço</h3>
+            <div class="grid-info">
+                <div class="info-group"><strong>CEP:</strong> {{ aluno.cep }}</div>
+                <div class="info-group"><strong>Logradouro:</strong> {{ aluno.logradouro }}</div>
+                <div class="info-group"><strong>Número:</strong> {{ aluno.numero }}</div>
+                <div class="info-group"><strong>Complemento:</strong> {{ aluno.complemento|default:"-" }}</div>
+                <div class="info-group"><strong>Bairro:</strong> {{ aluno.bairro }}</div>
+                <div class="info-group"><strong>Município / UF:</strong> {{ aluno.cidade }} - {{ aluno.uf }}</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Histórico de Saúde (Anamnese)</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Possui alguma doença?</span>
+                        <span class="badge-saude {% if aluno.possui_doenca %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.possui_doenca %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.possui_doenca %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.qual_doenca }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Já realizou cirurgias?</span>
+                        <span class="badge-saude {% if aluno.fez_cirurgia %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.fez_cirurgia %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.fez_cirurgia %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.qual_cirurgia }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Faz tratamento médico atualmente?</span>
+                        <span class="badge-saude {% if aluno.faz_tratamento %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.faz_tratamento %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.faz_tratamento %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.qual_tratamento }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Possui dores frequentes?</span>
+                        <span class="badge-saude {% if aluno.dores_frequentes %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.dores_frequentes %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.dores_frequentes %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.quais_dores }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Problemas de coluna?</span>
+                        <span class="badge-saude {% if aluno.problemas_coluna %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.problemas_coluna %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.problemas_coluna %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.quais_problemas_coluna }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Hérnia de disco?</span>
+                        <span class="badge-saude {% if aluno.hernia_disco %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.hernia_disco %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.hernia_disco %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.descricao_hernia }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Problemas cardíacos?</span>
+                        <span class="badge-saude {% if aluno.problemas_cardiacos %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.problemas_cardiacos %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.problemas_cardiacos %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.descricao_problemas_cardiacos }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Hipertensão?</span>
+                        <span class="badge-saude {% if aluno.hipertensao %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.hipertensao %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.hipertensao %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.qual_hipertensao }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Diabetes?</span>
+                        <span class="badge-saude {% if aluno.diabetes %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.diabetes %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.diabetes %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.qual_diabete }}</div>{% endif %}
+                </div>
+
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Osteoporose?</span>
+                        <span class="badge-saude {% if aluno.osteoporose %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.osteoporose %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.osteoporose %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.qual_osteoporose }}</div>{% endif %}
+                </div>
+
+                <div style="padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Labirintite?</span>
+                        <span class="badge-saude {% if aluno.labirintite %}badge-sim{% else %}badge-nao{% endif %}">
+                            {% if aluno.labirintite %}SIM{% else %}NÃO{% endif %}
+                        </span>
+                    </div>
+                    {% if aluno.labirintite %}<div class="descricao-medica"><strong>Detalhes:</strong> {{ aluno.qual_labirintite }}</div>{% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="section-box" style="background-color: #EBF5FB; border-color: #AED6F1;">
+            <div style="font-size: 13px; color: #2C3E50;">
+                🔒 <strong>Consentimento de Dados (LGPD):</strong> Este(a) aluno(a) aceitou os termos de privacidade para tratamento de dados sensíveis de saúde em <strong>{{ aluno.lgpd_consentimento|date:"d/m/Y \à\s H:i" }}</strong>.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

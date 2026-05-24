@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Termos de Consentimento - LGPD</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #EBE8E3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .lgpd-container { background-color: #FFFFFF; padding: 35px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 600px; w-index: 100; text-align: center; }
+        h2 { color: #C0392B; margin-top: 0; margin-bottom: 15px; font-size: 22px; }
+        p { color: #555; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: left; }
+        
+        .terms-box { background-color: #F8F9FA; padding: 20px; border: 1px solid #ccc; border-radius: 6px; max-height: 250px; overflow-y: scroll; font-size: 13px; color: #333; margin-bottom: 25px; line-height: 1.6; text-align: left; }
+        
+        .actions { display: flex; gap: 15px; justify-content: center; }
+        .btn { padding: 12px 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 15px; border: none; flex: 1; text-align: center; text-decoration: none; }
+        .btn-accept { background-color: #27AE60; color: white; }
+        .btn-accept:hover { background-color: #219150; }
+        .btn-reject { background-color: #777; color: white; }
+        .btn-reject:hover { background-color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="lgpd-container">
+        <h2>Termos de Consentimento e Privacidade</h2>
+        <p>Olá! Para garantir a segurança dos seus treinos e a proteção das suas informações clínicas, precisamos que você leia e aceite nossas políticas de tratamento de dados em conformidade com a LGPD antes de continuar.</p>
+        
+        <div class="terms-box">
+            <strong>POLÍTICA DE PRIVACIDADE E PROTEÇÃO DE DADOS (LGPD)</strong><br><br>
+            1. OBJETIVO DA COLETA: Os dados pessoais e informações sensíveis de saúde fornecidos na sua ficha de anamnese (histórico médico, cirurgias, dores, patologias na coluna, etc.) são coletados com a única e exclusiva finalidade de planejar, personalizar e aplicar as aulas de Pilates de forma segura pela equipe técnica do estúdio.<br><br>
+            2. CONFIDENCIALIDADE E SEGURANÇA: O Studio Pilates Samira Akrouch garante que todas as suas informações médicas estão protegidas por criptografia em nossa base de dados e jamais serão compartilhadas, vendidas ou expostas a terceiros não autorizados.<br><br>
+            3. DIREITOS DO TITULAR: Nos termos da Lei Geral de Proteção de Dados (Lei nº 13.709/18), você tem o direito de solicitar a retificação, atualização ou exclusão definitiva dos seus dados do nosso sistema a qualquer momento, o que resultará no encerramento do contrato de prestação de serviços por impossibilidade de execução segura das aulas.<br><br>
+            4. VIGÊNCIA: Este consentimento possui validade jurídica imediata e permanecerá ativo durante todo o período em que sua matrícula estiver vigente no estúdio.
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="actions">
+                <button type="submit" name="acao" value="recusar" class="btn btn-reject">Recusar e Sair</button>
+                <button type="submit" name="acao" value="aceitar" class="btn btn-accept">Aceitar e Continuar</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
