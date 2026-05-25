@@ -4,7 +4,7 @@
 [![Linguagem Backend](https://img.shields.io/badge/Backend-Python%20%7C%20Django-092E20.svg?logo=django&logoColor=white)](#)
 [![Linguagem Frontend](https://img.shields.io/badge/Frontend-HTML%20%7C%20Bootstrap-563D7C.svg?logo=bootstrap&logoColor=white)](#)
 
-Projeto Final de Curso (PFC) focado no desenvolvimento de uma aplicação web integrada para o **Studio de Pilates Samira Akrouch**. O sistema une uma interface pública minimalista para atração de alunos com um painel administrativo seguro para a gestão do negócio, desenvolvido com o framework Django.
+Desenvolvimento de uma aplicação web integrada para o **Studio de Pilates Samira Akrouch**. O sistema une uma interface pública minimalista para atração de alunos com um painel administrativo seguro para a gestão do negócio, desenvolvido com o framework Django.
 
 ## 📌 Visão Geral do Projeto
 
